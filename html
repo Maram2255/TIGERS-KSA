@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>النمور السعودية</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <img src="nimran-bot.png" alt="روبوت نمران" class="mascot">
+    <h1>النمور السعودية</h1>
+    <p>منصة رقمية للمتاجر والمصانع السعودية برؤية مستقبلية</p>
+    <button onclick="toggleDarkMode()">🌙 تبديل الوضع</button>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="#about">من نحن</a></li>
+      <li><a href="#features">المميزات</a></li>
+      <li><a href="#products">المنتجات</a></li>
+      <li><a href="#dashboard">لوحة التحكم</a></li>
+      <li><a href="#contact">تواصل معنا</a></li>
+    </ul>
+  </nav>
+
+  <section id="about" class="section active">
+    <h2>من نحن</h2>
+    <p>نحن منصة سعودية ذكية تجمع بين التقنية، السرعة، والهوية الوطنية.</p>
+  </section>
+
+  <section id="features" class="section">
+    <h2>مميزات المنصة</h2>
+    <ul>
+      <li>🤖 روبوت نمران الذكي لخدمة العملاء</li>
+      <li>🛒 متجر إلكتروني متكامل</li>
+      <li>📦 إدارة مخزون ومصانع</li>
+      <li>🔐 أمان عالي وتقنيات تشفير حديثة</li>
+      <li>🌐 دعم متعدد اللغات</li>
+      <li>📊 لوحة تحكم تفاعلية</li>
+      <li>🧠 ذكاء اصطناعي لتحليل سلوك العملاء</li>
+      <li>🕶️ واقع معزز لعرض المنتجات</li>
+      <li>💳 دعم العملات الرقمية</li>
+      <li>🚚 تتبع لحظي للشحنات</li>
+    </ul>
+  </section>
+
+  <section id="products" class="section">
+    <h2>منتجاتنا</h2>
+    <div class="product">👕 تيشيرت النمر - 120 ريال</div>
+    <div class="product">🧢 قبعة TIGERS - 80 ريال</div>
+    <div class="product">☕ كوب حراري - 60 ريال</div>
+  </section>
+
+  <section id="dashboard" class="section">
+    <h2>لوحة التحكم</h2>
+    <p>📊 عرض الإحصائيات</p>
+    <p>📝 تعديل المحتوى</p>
+    <p>👥 إدارة المستخدمين</p>
+    <p>⚙️ إعدادات النظام</p>
+  </section>
+
+  <section id="contact" class="section">
+    <h2>تواصل معنا</h2>
+    <form onsubmit="submitContact(event)">
+      <textarea placeholder="اكتب رسالتك هنا" required></textarea>
+      <button type="submit">إرسال</button>
+      <p id="contact-msg"></p>
+    </form>
+  </section>
+
+  <footer>
+    <p>© 2025 النمور السعودية. جميع الحقوق محفوظة.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
