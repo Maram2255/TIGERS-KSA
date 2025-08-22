@@ -1,0 +1,368 @@
+diff --git a/package.json b/package.json
+new file mode 100644
+--- /dev/null
++++ b/package.json
+@@ -0,0 +1,51 @@
+{
+  "name": "tigers-ksa",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:generate": "prisma generate"
+  },
+  "dependencies": {
+    "next": "^13.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tailwindcss": "^3.0.0",
+    "prisma": "^4.0.0",
+    "next-auth": "^4.0.0",
+    "socket.io": "^4.0.0",
+    "three": "^0.150.0",
+    "axios": "^1.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "helmet": "^6.0.0"
+  },
+  "devDependencies": {
+    "@prisma/client": "^4.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "12.0.0"
+  }
+}
+
+diff --git a/tailwind.config.js b/tailwind.config.js
+new file mode 100644
+--- /dev/null
++++ b/tailwind.config.js
+@@ -0,0 +1,14 @@
+module.exports = {
+  content: ["./src/**/*.{js,jsx}"],
+  theme: {
+    extend: {
+      colors: {
+        turquoise: "#30CFCF",
+        white: "#FFFFFF"
+      }
+    }
+  },
+  plugins: []
+};
+
+diff --git a/next.config.js b/next.config.js
+new file mode 100644
+--- /dev/null
++++ b/next.config.js
+@@ -0,0 +1,16 @@
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.(glb|gltf)$/,
+      use: [{ loader: "url-loader" }]
+    });
+    return config;
+  }
+};
+module.exports = nextConfig;
+
+diff --git a/prisma/schema.prisma b/prisma/schema.prisma
+new file mode 100644
+--- /dev/null
++++ b/prisma/schema.prisma
+@@ -0,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("customer")
+  orders    Order[]
+  createdAt DateTime @default(now())
+}
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  imageUrl    String
+  stock       Int
+}
+model Order {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  products   Json
+  total      Float
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+}
+
+diff --git a/Dockerfile b/Dockerfile
+new file mode 100644
+--- /dev/null
++++ b/Dockerfile
+@@ -0,0 +1,14 @@
+FROM node:18-alpine
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+
+diff --git a/docker-compose.yml b/docker-compose.yml
+new file mode 100644
+--- /dev/null
++++ b/docker-compose.yml
+@@ -0,0 +1,22 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+volumes:
+  db-data:
+
+diff --git a/.github/workflows/ci-cd.yml b/.github/workflows/ci-cd.yml
+new file mode 100644
+--- /dev/null
++++ b/.github/workflows/ci-cd.yml
+@@ -0,0 +1,29 @@
+name: CI/CD
+on:
+  push:
+    branches: [main]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build Project
+        run: npm run build
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@v2.1.5
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          remote-user: deployer
+          server-ip: ${{ secrets.SERVER_IP }}
+          remote-path: /var/www/tigers-ksa
+
+diff --git a/src/styles/globals.css b/src/styles/globals.css
+new file mode 100644
+--- /dev/null
++++ b/src/styles/globals.css
+@@ -0,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body {
+  @apply bg-white text-gray-800;
+}
+a {
+  @apply text-turquoise hover:underline;
+}
+
+diff --git a/src/pages/_app.jsx b/src/pages/_app.jsx
+new file mode 100644
+--- /dev/null
++++ b/src/pages/_app.jsx
+@@ -0,0 +1,14 @@
+import "../styles/globals.css";
+import { SessionProvider } from "next-auth/react";
+export default function App({ Component, pageProps: { session, ...pageProps } }) {
+  return (
+    <SessionProvider session={session}>
+      <Component {...pageProps} />
+    </SessionProvider>
+  );
+}
+
+diff --git a/src/pages/index.jsx b/src/pages/index.jsx
+new file mode 100644
+--- /dev/null
++++ b/src/pages/index.jsx
+@@ -0,0 +1,20 @@
+import Layout from "../components/Layout";
+import RobotMascot from "../components/RobotMascot";
+export default function Home() {
+  return (
+    <Layout>
+      <section className="text-center py-20 bg-white">
+        <h1 className="text-5xl font-bold text-turquoise mb-4">
+          النمور السعودية
+        </h1>
+        <p className="text-lg text-gray-600 mb-8">
+          المنصة المستقبلية لإدارة المتاجر والمصانع
+        </p>
+        <RobotMascot />
+      </section>
+    </Layout>
+  );
+}
+
+diff --git a/src/components/Layout.jsx b/src/components/Layout.jsx
+new file mode 100644
+--- /dev/null
++++ b/src/components/Layout.jsx
+@@ -0,0 +1,16 @@
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+export default function Layout({ children }) {
+  return (
+    <div className="min-h-screen flex flex-col bg-white text-gray-800">
+      <Navbar />
+      <main className="flex-grow">{children}</main>
+      <Footer />
+    </div>
+  );
+}
+
+diff --git a/src/components/Navbar.jsx b/src/components/Navbar.jsx
+new file mode 100644
+--- /dev/null
++++ b/src/components/Navbar.jsx
+@@ -0,0 +1,16 @@
+import Link from "next/link";
+export default function Navbar() {
+  return (
+    <nav className="bg-turquoise text-white flex justify-between p-4">
+      <div className="text-xl font-semibold">النمور السعودية</div>
+      <div className="space-x-6">
+        <Link href="/">الرئيسية</Link>
+        <Link href="/shop">المتجر</Link>
+        <Link href="/admin/dashboard">لوحة التحكم</Link>
+      </div>
+    </nav>
+  );
+}
+
+diff --git a/src/components/RobotMascot.jsx b/src/components/RobotMascot.jsx
+new file mode 100644
+--- /dev/null
++++ b/src/components/RobotMascot.jsx
+@@ -0,0 +1,44 @@
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+export default function RobotMascot() {
+  const mountRef = useRef(null);
+  useEffect(() => {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize(300, 300);
+    mountRef.current.appendChild(renderer.domElement);
+    const loader = new GLTFLoader();
+    loader.load("/models/robot.glb", gltf => {
+      gltf.scene.scale.set(2, 2, 2);
+      scene.add(gltf.scene);
+    });
+    scene.add(new THREE.HemisphereLight("#30CFCF", "#ffffff", 1));
+    camera.position.z = 5;
+    const animate = () => {
+      requestAnimationFrame(animate);
+      scene.rotation.y += 0.003;
+      renderer.render(scene, camera);
+    };
+    animate();
+    return () => mountRef.current.removeChild(renderer.domElement);
+  }, []);
+  return <div ref={mountRef} className="mx-auto" />;
+}
+
+diff --git a/src/pages/api/products.js b/src/pages/api/products.js
+new file mode 100644
+--- /dev/null
++++ b/src/pages/api/products.js
+@@ -0,0 +1,29 @@
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+export default async function handler(req, res) {
+  if (req.method === "GET") {
+    const products = await prisma.product.findMany();
+    return res.status(200).json(products);
+  }
+  if (req.method === "POST") {
+    const { name, description, price, imageUrl, stock } = req.body;
+    const product = await prisma.product.create({
+      data: { name, description, price, imageUrl, stock }
+    });
+    return res.status(201).json(product);
+  }
+  res.status(405).end();
+}
+
+diff --git a/src/pages/api/orders.js b/src/pages/api/orders.js
+new file mode 100644
+--- /dev/null
++++ b/src/pages/api/orders.js
+@@ -0,0 +1,32 @@
+import { getSession } from "next-auth/react";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+export default async function handler(req, res) {
+  const session = await getSession({ req });
+  if (!session) return res.status(401).end();
+  if (req.method === "POST") {
+    const { products, total } = req.body;
+    const order = await prisma.order.create({
+      data: { userId: session.user.id, products, total }
+    });
+    return res.status(201).json(order);
+  }
+  if (req.method === "GET") {
+    const orders = await prisma.order.findMany({
+      where: { userId: session.user.id }
+    });
+    return res.status(200).json(orders);
+  }
+  res.status(405).end();
+}
+
+diff --git a/src/pages/admin/dashboard.jsx b/src/pages/admin/dashboard.jsx
+new file mode 100644
+--- /dev/null
++++ b/src/pages/admin/dashboard.jsx
+@@ -0,0 +1,36 @@
+import { useSession } from "next-auth/react";
+import useSWR from "swr";
+import axios from "axios";
+export default function Dashboard() {
+  const { data: session } = useSession();
+  const { data: products } = useSWR("/api/products", url =>
+    axios.get(url).then(r => r.data)
+  );
+  if (!session || session.user.role !== "admin") {
+    return <div className="p-10 text-center">غير مصرح بالدخول</div>;
+  }
+  return (
+    <div className="p-10">
+      <h2 className="text-2xl font-bold mb-6">لوحة التحكم</h2>
+      <table className="min-w-full bg-white">
+        <thead>
+          <tr>
+            <th>المنتج</th>
