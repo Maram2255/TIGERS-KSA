@@ -1,0 +1,119 @@
+diff --git a/src/pages/api/auth/[...nextauth].js b/src/pages/api/auth/[...nextauth].js
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/src/pages/api/auth/[...nextauth].js
+@@ -0,0 +1, thirty
++import NextAuth from "next-auth";
++import GoogleProvider from "next-auth/providers/google";
++import GitHubProvider from "next-auth/providers/github";
++
++export default NextAuth({
++  providers: [
++    GoogleProvider({
++      clientId: process.env.GOOGLE_CLIENT_ID,
++      clientSecret: process.env.GOOGLE_CLIENT_SECRET
++    }),
++    GitHubProvider({
++      clientId: process.env.GITHUB_ID,
++      clientSecret: process.env.GITHUB_SECRET
++    })
++  ],
++  secret: process.env.NEXTAUTH_SECRET,
++  session: {
++    strategy: "jwt"
++  },
++  callbacks: {
++    async jwt({ token, account }) {
++      if (account) {
++        // مثال: جميع المستخدمين الخارجيين دورهم "admin"
++        token.role = "admin";
++      }
++      return token;
++    },
++    async session({ session, token }) {
++      session.user.role = token.role;
++      return session;
++    }
++  }
++});
++
+diff --git a/src/pages/_app.jsx b/src/pages/_app.jsx
+index abcdef1..1234567 100644
+--- a/src/pages/_app.jsx
++++ b/src/pages/_app.jsx
+@@ -1,5 +1,9 @@
+-import "../styles/globals.css";
++import "../styles/globals.css";
+ import { SessionProvider } from "next-auth/react";
+ 
+-export default function App({ Component, pageProps: { session, ...pageProps } }) {
+-  return (
+-    <SessionProvider session={session}>
+-      <Component {...pageProps} />
+-    </SessionProvider>
+-  );
+-}
++export default function App({ Component, pageProps: { session, ...pageProps } }) {
++  return (
++    <SessionProvider session={session}>
++      <Component {...pageProps} />
++    </SessionProvider>
++  );
++}
+ 
+diff --git a/src/components/Navbar.jsx b/src/components/Navbar.jsx
+index 2345678..abcdef0 100644
+--- a/src/components/Navbar.jsx
++++ b/src/components/Navbar.jsx
+@@ -1,4 +1,11 @@
+-import Link from "next/link";
++import Link from "next/link";
++import { useSession, signIn, signOut } from "next-auth/react";
+ 
+ export default function Navbar() {
+-  return (
++  const { data: session } = useSession();
++  return (
+     <nav className="bg-turquoise text-white flex justify-between p-4">
+       <div className="text-xl font-semibold">النمور السعودية</div>
+       <div className="space-x-6 flex items-center">
++        <Link href="/">الرئيسية</Link>
++        <Link href="/shop">المتجر</Link>
++        <Link href="/admin/dashboard">لوحة التحكم</Link>
++        {session ? (
++          <button onClick={() => signOut()}>تسجيل الخروج</button>
++        ) : (
++          <button onClick={() => signIn()}>تسجيل الدخول</button>
++        )}
+       </div>
+     </nav>
+   );
+diff --git a/src/pages/admin/dashboard.jsx b/src/pages/admin/dashboard.jsx
+index fedcba9..9876543 100644
+--- a/src/pages/admin/dashboard.jsx
++++ b/src/pages/admin/dashboard.jsx
+@@ -1,6 +1,7 @@
+ import { useSession } from "next-auth/react";
+ import useSWR from "swr";
+ import axios from "axios";
++import { useRouter } from "next/router";
+ 
+ export default function Dashboard() {
+   const { data: session, status } = useSession();
+@@ -8,7 +9,14 @@ export default function Dashboard() {
+ 
+   if (status === "loading") {
+     return <div className="p-10 text-center">جاري التحقق…</div>;
+-  }
++  }
++
++  if (!session || session.user.role !== "admin") {
++    // إعادة توجيه غير المخولين
++    const router = useRouter();
++    if (status !== "loading") router.replace("/");
++    return null;
++  }
+ 
+   const { data: products } = useSWR("/api/products", url =>
+     axios.get(url).then(r => r.data)
