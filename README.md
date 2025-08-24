@@ -2,69 +2,195 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TIGERS-KSA</title>
   <style>
-    body {
+    /*======================
+      المتغيرات الأساسية
+    ======================*/
+    :root {
+      --brand-gold: #d4af37;
+      --brand-dark: #1a1a1a;
+      --brand-light: #f5f5f5;
+      --text-dark: #333333;
+      --text-light: #f0f0f0;
+      --transition: 0.3s ease-in-out;
+    }
+
+    /*======================
+      قواعد عامة
+    ======================*/
+    * {
+      box-sizing: border-box;
       margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(to bottom, #fff, #f5f5f5);
-      color: #333;
-      transition: background 0.3s, color 0.3s;
-    }
-    body.dark-mode {
-      background-color: #121212;
-      color: #f0f0f0;
-    }
-    header {
-      background: linear-gradient(135deg, #d4af37, #ffffff);
-      padding: 1rem;
-      text-align: center;
-      position: relative;
-    }
-    .dark-mode header {
-      background: linear-gradient(135deg, #b8860b, #1a1a1a);
-    }
-    .mascot {
-      width: 80px;
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-    }
-    nav ul {
-      list-style: none;
       padding: 0;
+    }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: var(--brand-light);
+      color: var(--text-dark);
+      transition: background var(--transition), color var(--transition);
+      line-height: 1.6;
+    }
+    img {
+      max-width: 100%;
+      display: block;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    button {
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    /*======================
+      الوضع الليلي
+    ======================*/
+    body.dark-mode {
+      background: var(--brand-dark);
+      color: var(--text-light);
+    }
+    body.dark-mode header,
+    body.dark-mode nav {
+      background: var(--brand-dark);
+    }
+    body.dark-mode .cta {
+      background: var(--brand-gold);
+      color: var(--brand-dark);
+    }
+
+    /*======================
+      رأس الصفحة والتنقل
+    ======================*/
+    header {
+      background: linear-gradient(135deg, var(--brand-gold), var(--brand-light));
+      padding: 1rem 2rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: background var(--transition);
+    }
+    header h1 {
+      font-size: 2rem;
+      letter-spacing: 2px;
+    }
+    nav {
+      background: var(--brand-gold);
       display: flex;
       justify-content: center;
       gap: 1rem;
-      flex-wrap: wrap;
+      padding: 0.8rem 0;
+      transition: background var(--transition);
     }
     nav a {
-      color: white;
-      text-decoration: none;
+      color: #fff;
       font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
     }
+    nav a:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /*======================
+      زر تبديل الوضع
+    ======================*/
+    #toggle-mode {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      background: var(--brand-gold);
+      border: none;
+      padding: 0.6rem;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      color: #fff;
+      z-index: 200;
+    }
+
+    /*======================
+      الأقسام الرئيسية
+    ======================*/
     .section {
-      padding: 3rem 2rem;
-      text-align: center;
       display: none;
+      padding: 3rem 2rem;
+      max-width: 900px;
+      margin: auto;
+      text-align: center;
     }
     .section.active {
       display: block;
     }
-    .cta-button {
-      background-color: #d4af37;
-      color: white;
-      padding: 1rem 2rem;
+    .section h2 {
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+    .section p,
+    .section ul {
+      margin-bottom: 1.5rem;
+    }
+    .section ul {
+      list-style: none;
+      display: inline-flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      text-align: right;
+    }
+    .section ul li {
+      position: relative;
+      padding-right: 1.5rem;
+    }
+    .section ul li::before {
+      content: "✔";
+      position: absolute;
+      right: 0;
+      color: var(--brand-gold);
+    }
+
+    /*======================
+      زر الإجراء الرئيسي
+    ======================*/
+    .cta {
+      display: inline-block;
+      background: var(--brand-dark);
+      color: #fff;
+      padding: 0.8rem 2rem;
       border: none;
-      border-radius: 8px;
-      font-size: 1.2rem;
-      cursor: pointer;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: background var(--transition);
     }
-    .dark-mode .cta-button {
-      background-color: #ffd700;
-      color: #1a1a1a;
+    .cta:hover {
+      background: var(--brand-gold);
     }
+
+    /*======================
+      نموذج التواصل وتسجيل الدخول
+    ======================*/
+    form {
+      max-width: 500px;
+      margin: auto;
+      text-align: right;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    textarea {
+      resize: vertical;
+    }
+
+    /*======================
+      الهوية البصرية
+    ======================*/
     .colors {
       display: flex;
       justify-content: center;
@@ -81,80 +207,84 @@
       font-weight: bold;
       color: #fff;
     }
+    .color-gold { background: var(--brand-gold); color: var(--brand-dark); }
+    .color-white { background: #fff; color: var(--brand-dark); border: 1px solid #ccc; }
+    .color-dark { background: var(--brand-dark); }
+
+    /*======================
+      التذييل
+    ======================*/
     footer {
+      background: #eee;
+      padding: 1rem 0;
       text-align: center;
-      padding: 1rem;
-      background-color: #eee;
+      margin-top: 2rem;
+      font-size: 0.9rem;
     }
-    .dark-mode footer {
-      background-color: #000;
-      color: #ccc;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 0.5rem;
-      margin: 0.5rem 0;
+    body.dark-mode footer {
+      background: #222;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
 
-  <button onclick="toggleDarkMode()" style="position:fixed;top:10px;right:10px;">🌙 تبديل الوضع</button>
+  <!-- زر تبديل الوضع -->
+  <button id="toggle-mode" onclick="toggleDarkMode()">🌙</button>
 
+  <!-- الرأس والتنقل -->
   <header>
-    <img src="assets/nimr.svg" alt="نمر" class="mascot" />
     <h1>TIGERS-KSA</h1>
-    <nav>
-      <ul>
-        <li><a href="#home" onclick="showSection('home')">الرئيسية</a></li>
-        <li><a href="#about" onclick="showSection('about')">من نحن</a></li>
-        <li><a href="#vision" onclick="showSection('vision')">الرؤية</a></li>
-        <li><a href="#identity" onclick="showSection('identity')">الهوية</a></li>
-        <li><a href="#contact" onclick="showSection('contact')">تواصل</a></li>
-        <li><a href="#login" onclick="showSection('login')">دخول</a></li>
-        <li><a href="#dashboard" onclick="showSection('dashboard')">لوحة التحكم</a></li>
-      </ul>
-    </nav>
   </header>
+  <nav>
+    <a href="#home"    onclick="navigate('home')">الرئيسية</a>
+    <a href="#about"   onclick="navigate('about')">من نحن</a>
+    <a href="#vision"  onclick="navigate('vision')">رؤيتنا</a>
+    <a href="#identity"onclick="navigate('identity')">الهوية</a>
+    <a href="#contact" onclick="navigate('contact')">تواصل</a>
+    <a href="#login"   onclick="navigate('login')">دخول</a>
+    <a href="#dash"    onclick="navigate('dash')">لوحة التحكم</a>
+  </nav>
 
+  <!-- الأقسام -->
   <section id="home" class="section active">
     <h2>ابتكار رقمي بهوية سعودية</h2>
-    <p>منصة تجمع بين القوة، السرعة، والفخر الوطني.</p>
-    <button class="cta-button">ابدأ الآن</button>
+    <p>منصة TIGERS-KSA تجمع بين القوة والسرعة والفخر الوطني في تجربة واحدة متكاملة.</p>
+    <button class="cta" onclick="navigate('about')">اكتشف المزيد</button>
   </section>
 
   <section id="about" class="section">
     <h2>من نحن</h2>
-    <p>نحن TIGERS-KSA، منصة سعودية رقمية تمزج بين السرعة، القوة، والهوية الثقافية.</p>
+    <p>نحن فريق رقمي سعودي نهدف لصنع تجارب مبتكرة تناسب روح العصر وتمثل هويتنا الوطنية.</p>
   </section>
 
   <section id="vision" class="section">
     <h2>رؤيتنا</h2>
     <ul>
-      <li>🌐 تمثيل الهوية السعودية في كل تفصيلة</li>
-      <li>⚡ سرعة الأداء وسلاسة التفاعل</li>
-      <li>🎨 تصميم بصري متوازن بين الحداثة والتراث</li>
-      <li>🛡️ أمان وموثوقية في كل طبقة تقنية</li>
+      <li>تمثيل الهوية السعودية في كل تفصيل</li>
+      <li>سرعة أداء لا مثيل لها</li>
+      <li>تصميم بصري يمزج الحداثة بالتراث</li>
+      <li>أمان وموثوقية رفيعة المستوى</li>
     </ul>
   </section>
 
   <section id="identity" class="section">
     <h2>الهوية البصرية</h2>
     <div class="colors">
-      <div class="color-box" style="background-color:#d4af37;">ذهبي</div>
-      <div class="color-box" style="background-color:#ffffff; color:#000;">أبيض</div>
-      <div class="color-box" style="background-color:#000000;">أسود</div>
+      <div class="color-box color-gold">ذهبي</div>
+      <div class="color-box color-white">أبيض</div>
+      <div class="color-box color-dark">أسود</div>
     </div>
-    <p>الماسكوت "نـمـر" يرمز إلى القوة والسرعة والهوية السعودية بأسلوب هندسي مجرد.</p>
+    <p>الماسكوت "نمر" يرمز للقوة والسرعة وهو تجسيد بصري لعراقة التراث السعودي.</p>
   </section>
 
   <section id="contact" class="section">
     <h2>تواصل معنا</h2>
     <form onsubmit="submitContact(event)">
-      <input type="text" placeholder="الاسم" required />
-      <input type="email" placeholder="البريد الإلكتروني" required />
-      <textarea rows="5" placeholder="رسالتك" required></textarea>
-      <button type="submit" class="cta-button">إرسال</button>
+      <input type="text"    placeholder="الاسم الكامل" required />
+      <input type="email"   placeholder="البريد الإلكتروني" required />
+      <textarea rows="4"   placeholder="رسالتك..." required></textarea>
+      <button type="submit" class="cta">إرسال</button>
     </form>
     <p id="contact-msg"></p>
   </section>
@@ -162,179 +292,66 @@
   <section id="login" class="section">
     <h2>تسجيل الدخول</h2>
     <form onsubmit="login(event)">
-      <input type="text" id="username" placeholder="اسم المستخدم" required />
-      <input type="password" id="password" placeholder="كلمة المرور" required />
-      <button type="submit" class="cta-button">دخول</button>
+      <input type="text"     id="user" placeholder="اسم المستخدم" required />
+      <input type="password" id="pass" placeholder="كلمة المرور" required />
+      <button type="submit" class="cta">دخول</button>
     </form>
     <p id="login-msg"></p>
   </section>
 
-  <section id="dashboard" class="section">
+  <section id="dash" class="section">
     <h2>لوحة التحكم</h2>
-    <p>مرحبًا بك يا ميمو! هذه لوحة إدارة TIGERS-KSA.</p>
+    <p>مرحبًا بك في لوحة إدارة TIGERS-KSA!</p>
     <ul>
-      <li>📊 عرض الإحصائيات</li>
-      <li>📝 تعديل المحتوى</li>
-      <li>👥 إدارة المستخدمين</li>
-      <li>⚙️ إعدادات النظام</li>
+      <li>عرض الإحصائيات</li>
+      <li>تحرير المحتوى</li>
+      <li>إدارة المستخدمين</li>
+      <li>إعدادات النظام</li>
     </ul>
   </section>
 
+  <!-- التذييل -->
   <footer>
-    <p>© 2025 TIGERS-KSA. جميع الحقوق محفوظة.</p>
+    © 2025 TIGERS-KSA. جميع الحقوق محفوظة.
   </footer>
 
   <script>
-    function showSection(id) {
+    // التنقل بين الأقسام
+    function navigate(id) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
+      window.location.hash = id;
     }
 
+    // تبديل الوضع الليلي
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
     }
 
+    // إرسال نموذج التواصل
     function submitContact(e) {
       e.preventDefault();
-      document.getElementById('contact-msg').textContent = "✅ تم إرسال رسالتك بنجاح!";
+      document.getElementById('contact-msg').textContent = '✅ تم إرسال رسالتك بنجاح!';
     }
 
+    // تسجيل الدخول التجريبي
     function login(e) {
       e.preventDefault();
-      const user = document.getElementById('username').value;
-      const pass = document.getElementById('password').value;
-      if (user === "admin" && pass === "1234") {
-        document.getElementById('login-msg').textContent = "✅ تم تسجيل الدخول!";
-        showSection('dashboard');
+      const u = document.getElementById('user').value;
+      const p = document.getElementById('pass').value;
+      if (u === 'admin' && p === '1234') {
+        document.getElementById('login-msg').textContent = '✅ تم تسجيل الدخول!';
+        navigate('dash');
       } else {
-        document.getElementById('login-msg').textContent = "❌ بيانات غير صحيحة!";
+        document.getElementById('login-msg').textContent = '❌ بيانات غير صحيحة!';
       }
     }
+
+    // عند التحميل: إظهار القسم الذي في العنوان
+    window.addEventListener('load', () => {
+      const section = window.location.hash.replace('#', '');
+      if (section) navigate(section);
+    });
   </script>
-
-</body>
-</html>      flex: 1;
-      text-align: center;
-      position: relative;
-    }
-
-    .step::before {
-      content: "●";
-      color: var(--turquoise);
-      font-size: 1.5rem;
-    }
-
-    .step::after {
-      content: "";
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      width: 100%;
-      height: 2px;
-      background: var(--turquoise);
-      z-index: -1;
-    }
-
-    .step:last-child::after {
-      display: none;
-    }
-
-    input, button {
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      max-width: 300px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-
-    button {
-      background-color: var(--turquoise);
-      color: var(--dark);
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #30cfcf;
-    }
-  </style>
-</head>
-<body>
-
-  <nav>
-    <a href="#" onclick="showPage('home')">🏠 الرئيسية</a>
-    <a href="#" onclick="showPage('products')">🛍️ المنتجات</a>
-    <a href="#" onclick="showPage('cart')">🛒 السلة</a>
-    <a href="#" onclick="showPage('checkout')">💳 الدفع</a>
-    <a href="#" onclick="showPage('login')">🔐 تسجيل الدخول</a>
-    <a href="#" onclick="showPage('signup')">📝 إنشاء حساب</a>
-    <a href="#" onclick="showPage('track')">🚚 تتبع الطلب</a>
-  </nav>
-
-  <div id="home" class="page active">
-    <h1>مرحبًا بكم في TIGERS-KSA 🐅</h1>
-    <p>منصة ذكية للمنتجات الرياضية والأنيقة.</p>
-  </div>
-
-  <div id="products" class="page">
-    <h2>المنتجات</h2>
-    <ul>
-      <li>👕 تيشيرت النمر - 120 ريال</li>
-      <li>🧢 قبعة TIGERS - 80 ريال</li>
-      <li>☕ كوب حراري - 60 ريال</li>
-    </ul>
-  </div>
-
-  <div id="cart" class="page">
-    <h2>السلة</h2>
-    <p>سلتك فارغة الآن.</p>
-  </div>
-
-  <div id="checkout" class="page">
-    <h2>الدفع</h2>
-    <select>
-      <option>مدى</option>
-      <option>فيزا / ماستر كارد</option>
-      <option>Apple Pay</option>
-      <option>STC Pay</option>
-    </select>
-    <button>إتمام الطلب</button>
-  </div>
-
-  <div id="login" class="page">
-    <h2>تسجيل الدخول</h2>
-    <input type="email" placeholder="البريد الإلكتروني">
-    <input type="password" placeholder="كلمة المرور">
-    <button>دخول</button>
-  </div>
-
-  <div id="signup" class="page">
-    <h2>إنشاء حساب جديد</h2>
-    <input type="text" placeholder="الاسم الكامل">
-    <input type="email" placeholder="البريد الإلكتروني">
-    <input type="password" placeholder="كلمة المرور">
-    <button>إنشاء حساب</button>
-  </div>
-
-  <div id="track" class="page">
-    <h2>تتبع الطلب</h2>
-    <input type="text" placeholder="رقم الطلب">
-    <button>تتبع</button>
-    <div class="track-status">
-      <div class="step">جارٍ التحضير</div>
-      <div class="step">تم الشحن</div>
-      <div class="step">في الطريق</div>
-      <div class="step">تم التسليم</div>
-    </div>
-  </div>
-
-  <script>
-    function showPage(id) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
-  </script>
-
 </body>
 </html>
