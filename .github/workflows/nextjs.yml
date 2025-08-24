@@ -41,7 +41,15 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+const isProd = process.env.NODE_ENV === 'production';
 
+module.exports = {
+  output: 'export',
+  basePath: isProd ? '/TIGERS-KSA' : '',
+  images: {
+    unoptimized: true,
+  },
+};
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v1
